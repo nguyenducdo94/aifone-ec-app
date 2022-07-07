@@ -7,7 +7,7 @@ import { useInterfaceContext } from '../../context/interfaceContext';
 
 const Dashboard = () => {
    const classes = useStyles();
-   const { user } = useUserContext();
+   const { profile } = useUserContext();
    const { sidebarShowStatus } = useInterfaceContext();
 
    return (
@@ -18,8 +18,8 @@ const Dashboard = () => {
                <Paper className={classes.content} elevation={6}>
                   <h1>Chào mừng bạn!</h1>
                   <Divider />
-                  <h2>Tên: {user.displayName}</h2>
-                  <h2>Địa chỉ email: {user.email}</h2>
+                  <h2>Tên: {profile?.fullName}</h2>
+                  <h2>Địa chỉ email: {profile?.email}</h2>
                   <Divider />
                   <div style={{ display: 'flex', direction: 'row' }}>
                      <h4>Bạn muốn bắt đầu công việc chứ?</h4>

@@ -4,12 +4,12 @@ import {
     createUserWithEmailAndPassword,
     onAuthStateChanged,
     signOut,
-    updateProfile,
     sendPasswordResetEmail,
     sendEmailVerification,
 } from 'firebase/auth';
-import { firebaseAuth } from '../firebase';
+import { firebaseAuth, fStore } from '../firebase';
 import { USER_NOT_FOUND, EMAIL_ALREADY_IN_USE, WRONG_PASSWORD } from '../constants/errorCode';
+import { setDoc, doc, Timestamp, getDoc, updateDoc } from 'firebase/firestore';
 
 export const UserContext = createContext({});
 
@@ -21,35 +21,57 @@ export const UserContextProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [profile, setProfile] = useState(null);
 
     useEffect(() => {
         setLoading(true);
         const unsubsribe = onAuthStateChanged(firebaseAuth, (res) => {
             if (res) {
                 setUser(res);
+                getDoc(doc(fStore, 'users', firebaseAuth.currentUser.uid)).then((docSnap) => {
+                    if (docSnap.exists) {
+                        setProfile(docSnap.data());
+                    }
+                });
             } else {
                 setUser(null);
             }
             setError('');
             setLoading(false);
         })
+
+
         return unsubsribe;
     }, []);
 
     const registerUser = async ({ fullName, email, password, confirmPassword }) => {
         if (password === confirmPassword) {
-            setLoading(true);
-            await createUserWithEmailAndPassword(firebaseAuth, email, password)
-                .then(() =>
-                    updateProfile(firebaseAuth.currentUser, {
-                        displayName: fullName,
-                    })
-                )
-                .then(() => sendEmailVerification(firebaseAuth.currentUser))
-                .catch((error) => {
-                    if (error.code === EMAIL_ALREADY_IN_USE) setError('Email đã được sử dụng!')
-                })
-                .finally(() => setLoading(false));
+
+            try {
+                setLoading(true);
+                const result = await createUserWithEmailAndPassword(firebaseAuth, email, password)
+                await sendEmailVerification(firebaseAuth.currentUser);
+
+                try {
+                    await setDoc(doc(fStore, 'users', result.user.uid), {
+                        uid: result.user.uid,
+                        fullName,
+                        email,
+                        createdAt: Timestamp.fromDate(new Date()),
+                        role: 'user',
+                        avatarUrl: '',
+                    });
+                } catch (error) {
+                    console.log(error)
+                }
+
+                setLoading(false);
+
+            } catch (error) {
+                if (error.code === EMAIL_ALREADY_IN_USE) setError('Email đã được sử dụng!')
+                else setError(error.code)
+                setLoading(false);
+            }
 
         } else {
             setError('Mật khẩu xác nhận không đúng');
@@ -85,6 +107,7 @@ export const UserContextProvider = ({ children }) => {
         registerUser,
         logOutUser,
         forgotPassword,
+        profile
     };
 
     return (

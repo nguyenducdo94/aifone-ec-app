@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { Grow, Avatar, Button, Paper, Grid, Typography, Container } from '@material-ui/core';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import useStyles from './styles';
@@ -53,9 +53,11 @@ const Auth = () => {
 
         if (isSignup) {
             registerUser(formData);
+            setFormData(initialState);
         }
         else {
             signInUser(formData);
+            setFormData(initialState);
         }
     };
 

@@ -8,6 +8,7 @@ import { useUserContext } from '../../context/userContext';
 
 const Home = () => {
     const { user } = useUserContext();
+
     return (
         <div>
             <BrowserRouter>
