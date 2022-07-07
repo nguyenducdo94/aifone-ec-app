@@ -1,6 +1,6 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Drawer, Grow, Divider, ListItem, List, ListItemIcon, ListItemText } from '@material-ui/core';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
 import DashboardIcon from '@material-ui/icons/Dashboard';
 import EventNoteIcon from '@material-ui/icons/EventNote';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
@@ -12,14 +12,14 @@ import AssessmentIcon from '@material-ui/icons/Assessment';
 import AppsIcon from '@material-ui/icons/Apps';
 import ReportProblemIcon from '@material-ui/icons/ReportProblem';
 import PhonelinkSetupIcon from '@material-ui/icons/PhonelinkSetup';
-import MailIcon from '@material-ui/icons/Mail';
 import useStyles from './styles';
-import {useInterfaceContext} from '../../context/interfaceContext';
+import { useInterfaceContext } from '../../context/interfaceContext';
 
 export default function PersistentDrawerLeft(user) {
    const classes = useStyles();
-   
-   const {sidebarShowStatus} = useInterfaceContext();
+   const navigate = useNavigate();
+
+   const { sidebarShowStatus } = useInterfaceContext();
 
 
    return (
@@ -35,7 +35,7 @@ export default function PersistentDrawerLeft(user) {
          >
             <Divider />
             <List>
-               <ListItem button>
+               <ListItem button onClick={() => navigate('/dashboard')}>
                   <ListItemIcon><DashboardIcon color='primary' /></ListItemIcon>
                   <ListItemText primary='Tổng quan' />
                </ListItem>
@@ -81,6 +81,6 @@ export default function PersistentDrawerLeft(user) {
                </ListItem>
             </List>
          </Drawer>
-      </div>
+      </div >
    );
 }

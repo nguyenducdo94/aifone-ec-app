@@ -10,10 +10,14 @@ export default makeStyles((theme) => ({
    },
 
    container: {
-      padding: 20
+      padding: 20,
+      display: 'flex',
+      alignContent: 'center',
+      justifyContent: 'center'
    },
 
    content: {
+      width: '50%',
       padding: 20
    }
 }));

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Divider, Menu, MenuItem, Badge, InputBase, Typography, IconButton, Toolbar, AppBar, Grow, Avatar } from '@material-ui/core';
+import { Divider, Menu, MenuItem, ButtonBase, InputBase, Typography, IconButton, Toolbar, AppBar, Grow, Avatar } from '@material-ui/core';
 
 import MenuIcon from '@material-ui/icons/Menu';
 import SearchIcon from '@material-ui/icons/Search';
@@ -8,18 +8,22 @@ import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
 import SettingsOutlinedIcon from '@material-ui/icons/SettingsOutlined';
 import ExitToAppOutlinedIcon from '@material-ui/icons/ExitToAppOutlined';
 import MoreIcon from '@material-ui/icons/MoreVert';
+import { useNavigate } from 'react-router-dom'
 
 import { firebaseAuth } from '../../firebase';
 import { useInterfaceContext } from '../../context/interfaceContext';
+import { useUserContext } from '../../context/userContext';
 
 import useStyles from './styles';
 
-export default function PrimarySearchAppBar(user) {
+export default function PrimarySearchAppBar() {
    const classes = useStyles();
    const [anchorEl, setAnchorEl] = React.useState(null);
    const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
+   const navigate = useNavigate();
 
-   const {SidebarMenuClick} = useInterfaceContext();
+   const { SidebarMenuClick } = useInterfaceContext();
+   const { profile } = useUserContext();
 
    const isMenuOpen = Boolean(anchorEl);
    const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -47,6 +51,11 @@ export default function PrimarySearchAppBar(user) {
       firebaseAuth.signOut()
    }
 
+   const userInfoClick = () => {
+      navigate('/profile')
+      handleMenuClose()
+   }
+
    const menuId = 'primary-search-account-menu';
    const renderMenu = (
       <Menu
@@ -58,7 +67,7 @@ export default function PrimarySearchAppBar(user) {
          open={isMenuOpen}
          onClose={handleMenuClose}
       >
-         <MenuItem onClick={handleMenuClose}><InfoOutlinedIcon color='primary' />&emsp;Thông tin</MenuItem>
+         <MenuItem onClick={userInfoClick}><InfoOutlinedIcon color='primary' />&emsp;Thông tin</MenuItem>
          <Divider />
          <MenuItem onClick={handleMenuClose}><EditOutlinedIcon color='primary' /> &emsp;Sửa thông tin</MenuItem>
          <Divider />
@@ -87,7 +96,7 @@ export default function PrimarySearchAppBar(user) {
                aria-haspopup="true"
                color="inherit"
             >
-               <Avatar className={classes.avatar} alt="user_avatar" src={user.avatar}>A</Avatar>
+               <Avatar className={classes.avatar} alt="user_avatar" src={profile?.avarUrl}>{profile?.fullName?.substring(0, 1)}</Avatar>
             </IconButton>
             <p>Profile</p>
          </MenuItem>
@@ -112,9 +121,11 @@ export default function PrimarySearchAppBar(user) {
                   >
                      <MenuIcon />
                   </IconButton>
-                  <Typography className={classes.title} noWrap>
-                     QUẢN LÝ CỬA HÀNG
-                  </Typography>
+                  <ButtonBase onClick={() => (navigate('/'))}>
+                     <Typography className={classes.title} noWrap>
+                        QUẢN LÝ CỬA HÀNG
+                     </Typography>
+                  </ButtonBase>
                   <div className={classes.search}>
                      <div className={classes.searchIcon}>
                         <SearchIcon />
@@ -138,7 +149,7 @@ export default function PrimarySearchAppBar(user) {
                         onClick={handleProfileMenuOpen}
                         color="inherit"
                      >
-                        <Avatar className={classes.avatar} >{user?.user?.fullName?.substring(0, 2)}</Avatar>
+                        <Avatar className={classes.avatar} >{profile?.fullName?.substring(0, 2)}</Avatar>
                      </IconButton>
                   </div>
                   <div className={classes.sectionMobile}>

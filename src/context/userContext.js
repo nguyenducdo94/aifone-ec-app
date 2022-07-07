@@ -50,26 +50,24 @@ export const UserContextProvider = ({ children }) => {
             try {
                 setLoading(true);
                 const result = await createUserWithEmailAndPassword(firebaseAuth, email, password)
+
                 await sendEmailVerification(firebaseAuth.currentUser);
 
-                try {
-                    await setDoc(doc(fStore, 'users', result.user.uid), {
-                        uid: result.user.uid,
-                        fullName,
-                        email,
-                        createdAt: Timestamp.fromDate(new Date()),
-                        role: 'user',
-                        avatarUrl: '',
-                    });
-                } catch (error) {
-                    console.log(error)
-                }
+                await setDoc(doc(fStore, 'users', result.user.uid), {
+                    uid: result.user.uid,
+                    fullName,
+                    email,
+                    createdAt: Timestamp.fromDate(new Date()),
+                    role: 'user',
+                    avatarUrl: '',
+                });
 
                 setLoading(false);
 
             } catch (error) {
                 if (error.code === EMAIL_ALREADY_IN_USE) setError('Email đã được sử dụng!')
                 else setError(error.code)
+
                 setLoading(false);
             }
 
